@@ -28,7 +28,7 @@ async def receive_ruuvi(request: Request):
     :param request: value of sensors
     :type request: Post Request
     """
-    
+
     body = await request.json()
     logger.info("body : %s", body)
 
@@ -37,3 +37,4 @@ async def receive_ruuvi(request: Request):
         return {"error": "Invalid payload"}
 
     return {"status": "ok"}
+
