@@ -22,6 +22,13 @@ app = FastAPI()
 
 @app.post("/ruuvi")
 async def receive_ruuvi(request: Request):
+    """
+    Docstring for receive_ruuvi
+    
+    :param request: value of sensors
+    :type request: Post Request
+    """
+    
     body = await request.json()
     logger.info("body : %s", body)
 
