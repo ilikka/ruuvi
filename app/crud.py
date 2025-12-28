@@ -1,4 +1,3 @@
-config.py
 """
 save data from ruuvi gateway to database
 """
