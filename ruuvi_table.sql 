@@ -1,0 +1,56 @@
+
+CREATE SCHEMA IF NOT EXISTS ruuvi;
+
+CREATE TABLE ruuvi.gateway (
+    gw_mac TEXT PRIMARY KEY,
+    name TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE ruuvi.sensor (
+    tag_mac TEXT PRIMARY KEY,
+    name TEXT,
+    first_seen TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE ruuvi.data (
+    id BIGSERIAL PRIMARY KEY,
+    gw_mac TEXT NOT NULL,
+    tag_mac TEXT NOT NULL,
+
+    temperature REAL,
+    humidity REAL,
+    pressure REAL,
+    battery REAL,
+    rssi INTEGER,
+
+    measured_at TIMESTAMPTZ DEFAULT now(),
+
+    CONSTRAINT fk_gateway
+        FOREIGN KEY (gw_mac) REFERENCES ruuvi.gateway (gw_mac),
+    CONSTRAINT fk_sensor
+        FOREIGN KEY (tag_mac) REFERENCES ruuvi.sensor (tag_mac)
+);
+
+CREATE TABLE ruuvi.raw (
+    id BIGSERIAL PRIMARY KEY,
+    gw_mac TEXT NOT NULL,
+    tag_mac TEXT NOT NULL,
+
+    raw_data TEXT NOT NULL,
+    rssi INTEGER,
+
+    received_at TIMESTAMPTZ DEFAULT now()
+);
+
+
+
+
+CREATE INDEX idx_measurement_tag_time
+    ON ruuvi.data (tag_mac, measured_at DESC);
+
+CREATE INDEX idx_measurement_gateway_time
+    ON ruuvi.data (gw_mac, measured_at DESC);
+
+CREATE INDEX idx_raw_tag_time
+    ON ruuvi.raw (tag_mac, received_at DESC);
