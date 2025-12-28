@@ -1,6 +1,6 @@
 # ruuvi_api.py
 from fastapi import FastAPI, Request
-from ruuvi_decoders import decode_data as Decoder
+# ßfrom ruuvi_decoders import decode_data as Decoder
 from logging_config import setup_logging
 import logging
 
