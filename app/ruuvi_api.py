@@ -37,4 +37,3 @@ async def receive_ruuvi(request: Request):
         return {"error": "Invalid payload"}
 
     return {"status": "ok"}
-
