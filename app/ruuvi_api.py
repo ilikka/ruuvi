@@ -1,74 +1,42 @@
-# app/main_sync.py
 from fastapi import FastAPI, Request, Depends
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models import Base, Gateway, Sensor, Data, Raw
-from config import DATABASE_URL
+import asyncio
+from sqlalchemy.orm import Session
 
-# Sync engine
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine)
+from database import get_db
+import crud
 
 logger = logging.getLogger("ruuvi")
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
-app = FastAPI(title="Ruuvi API (Sync)")
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app = FastAPI(title="Ruuvi API")
 
 @app.post("/ruuvi")
-async def receive_ruuvi(request: Request, db=Depends(get_db)):
-    body = await request.json()
-    
-    logger.info("Received: %s", body)
+async def receive_ruuvi(request: Request, db: Session = Depends(get_db)):
+  body = await request.json()
+  logger.debug("Received payload: %s", body)
 
-    if "tag_mac" not in body:
-        logger.warning("Invalid payload: %s", body)
-        return {"error": "Invalid payload"}
+  if "tag_mac" not in body:
+    logger.warning("Invalid payload: %s", body)
+    return {"error": "Invalid payload"}
 
 
-    gw_mac = body.get("gw_mac")
-    tag_mac = body.get("tag_mac")
-    rssi = body.get("rssi")
-    raw_data = body.get("raw_data")
-    temperature = body.get("temperature")
-    humidity = body.get("humidity")
-    pressure = body.get("pressure")
-    battery = body.get("battery")
+  gw_mac = body.get("gw_mac")
+  tag_mac = body.get("tag_mac")
+  rssi = body.get("rssi")
+  raw_data = body.get("raw_data")
+  temperature = body.get("temperature")
+  humidity = body.get("humidity")
+  pressure = body.get("pressure")
+  battery = body.get("battery")
 
-    if not gw_mac or not tag_mac:
-        return {"error": "Missing gw_mac or tag_mac"}
+  if not gw_mac or not tag_mac:
+    return {"error": "Missing gw_mac or tag_mac"}
 
-    # Insert gateway if not exists
-    logger.info("gw mac: %s", gw_mac)
-    if not db.query(Gateway).filter_by(gw_mac=gw_mac).first():
-        db.add(Gateway(gw_mac=gw_mac))
-        db.commit()
+  # Run synchronous DB calls in a thread to avoid async errors
+  await asyncio.to_thread(crud.get_or_create_gateway, db, gw_mac)
+  await asyncio.to_thread(crud.get_or_create_sensor, db, tag_mac)
+  await asyncio.to_thread(crud.save_raw, db, gw_mac, tag_mac, raw_data, rssi)
+  await asyncio.to_thread(crud.save_data, db, gw_mac, tag_mac, temperature, humidity, pressure, battery, rssi)
 
-    # Insert sensor if not exists
-    if not db.query(Sensor).filter_by(tag_mac=tag_mac).first():
-        db.add(Sensor(tag_mac=tag_mac))
-        db.commit()
-
-    # Save raw data
-    db.add(Raw(gw_mac=gw_mac, tag_mac=tag_mac, raw_data=raw_data, rssi=rssi))
-    # Save decoded data
-    db.add(Data(
-        gw_mac=gw_mac,
-        tag_mac=tag_mac,
-        temperature=temperature,
-        humidity=humidity,
-        pressure=pressure,
-        battery=battery,
-        rssi=rssi
-    ))
-    db.commit()
-
-    return {"status": "ok"}
+  return {"status": "ok"}

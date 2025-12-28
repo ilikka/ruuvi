@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, BigInteger, Float, ForeignKey, TIMESTAMP, Text
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
 Base = declarative_base()
@@ -9,7 +9,7 @@ class Gateway(Base):
     __table_args__ = {"schema": "ruuvi"}
 
     gw_mac = Column(String, primary_key=True)
-    name = Column(String, nullable=True)
+    name = Column(String)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
 class Sensor(Base):
@@ -17,14 +17,14 @@ class Sensor(Base):
     __table_args__ = {"schema": "ruuvi"}
 
     tag_mac = Column(String, primary_key=True)
-    name = Column(String, nullable=True)
+    name = Column(String)
     first_seen = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
 class Data(Base):
     __tablename__ = "data"
     __table_args__ = {"schema": "ruuvi"}
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True)
     gw_mac = Column(String, ForeignKey("ruuvi.gateway.gw_mac"), nullable=False)
     tag_mac = Column(String, ForeignKey("ruuvi.sensor.tag_mac"), nullable=False)
     temperature = Column(Float)
@@ -38,7 +38,7 @@ class Raw(Base):
     __tablename__ = "raw"
     __table_args__ = {"schema": "ruuvi"}
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True)
     gw_mac = Column(String, nullable=False)
     tag_mac = Column(String, nullable=False)
     raw_data = Column(Text, nullable=False)
