@@ -25,7 +25,7 @@ def get_db():
 
 @app.post("/ruuvi")
 def receive_ruuvi(request: Request, db=Depends(get_db)):
-    body = request.json()
+    body = await request.json()
     logger.info("Received: %s", body)
 
     if "data" not in body:
