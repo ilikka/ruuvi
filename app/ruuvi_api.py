@@ -37,11 +37,13 @@ async def receive_ruuvi(request: Request, db: Session = Depends(get_db)):
       gw_mac, tag_mac, temperature, humidity
     )
 
+    # Run synchronous DB calls in a thread to avoid async errors
+    await asyncio.to_thread(crud.get_or_create_gateway, db, gw_mac)
+    await asyncio.to_thread(crud.get_or_create_sensor, db, tag_mac)
+
 
   
-  # Run synchronous DB calls in a thread to avoid async errors
-  # await asyncio.to_thread(crud.get_or_create_gateway, db, gw_mac)
-  # await asyncio.to_thread(crud.get_or_create_sensor, db, tag_mac)
+
   # await asyncio.to_thread(crud.save_raw, db, gw_mac, tag_mac, raw_data, rssi)
   #await asyncio.to_thread(crud.save_data, db, gw_mac, tag_mac, temperature, humidity, pressure, battery, rssi)
 
