@@ -8,7 +8,7 @@ from database import get_db
 import crud
 
 logger = logging.getLogger("ruuvi")
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="Ruuvi API")
 
