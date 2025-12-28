@@ -14,15 +14,19 @@ app = FastAPI(title="Ruuvi API")
 
 
 def verify_api_key(request: Request):
-    auth = request.headers.get("Authorization")
-    logger.debug("Received auth: %s", auth)
-    if not auth or auth != f"Bearer {API_KEY}":
-        raise HTTPException(status_code=401, detail="Invalid API Key")
+  auth = request.headers.get("Authorization")
+  logger.debug("Received auth: %s", auth)
+  if not auth or auth != f"Bearer {API_KEY}":
+    raise HTTPException(status_code=401, detail="Invalid API Key")
 
 
 
 @app.post("/ruuvi")
-async def receive_ruuvi(request: Request, db: Session = Depends(get_db), api_key=Depends(verify_api_key)):
+async def receive_ruuvi(
+  request: Request, 
+  db: Session = Depends(get_db), 
+  _=Depends(verify_api_key)): # underscore signals "unused"
+
   body = await request.json()
   logger.debug("Received payload: %s", body)
 
@@ -42,7 +46,7 @@ async def receive_ruuvi(request: Request, db: Session = Depends(get_db), api_key
     pressure = tag_data.get("pressure")
     voltage = tag_data.get("voltage")
 
-    logger.info(
+    logger.debug(
       "gw=%s tag=%s temp=%.2f hum=%.2f",
       gw_mac, tag_mac, temperature, humidity
     )
