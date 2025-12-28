@@ -30,11 +30,6 @@ def get_or_create_sensor(db: Session, tag_mac: str):
   :type tag_mac: str
   """
   sensor = db.query(Sensor).filter_by(tag_mac=tag_mac).first()
-  """
-  Docstring for get_or_create_sensor
-   chec if sensor exists, if not create it
-  :param db: Database session
-  """
   if not sensor:
     sensor = Sensor(tag_mac=tag_mac)
     db.add(sensor)
