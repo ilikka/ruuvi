@@ -1,10 +1,12 @@
 # app/main_sync.py
-from fastapi import FastAPI, Request, Depends
 import logging
+import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Gateway, Sensor, Data, Raw
 from config import DATABASE_URL
+
+from fastapi import FastAPI, Request, Depends
 
 # Sync engine
 engine = create_engine(DATABASE_URL)
@@ -24,11 +26,14 @@ def get_db():
         db.close()
 
 @app.post("/ruuvi")
-async def receive_ruuvi(request: Request, db=Depends(get_db)):
-    body = await request.json()
+def receive_ruuvi(request: Request, db=Depends(get_db)):
+    body_bytes = request.body()
+    body = json.loads(body_bytes)
     logger.info("Received: %s", body)
 
-    if "data" not in body:
+
+
+    if "tag_mac" not in body:
         logger.warning("Invalid payload: %s", body)
         return {"error": "Invalid payload"}
 
@@ -46,6 +51,7 @@ async def receive_ruuvi(request: Request, db=Depends(get_db)):
         return {"error": "Missing gw_mac or tag_mac"}
 
     # Insert gateway if not exists
+    logger.info("gw mac: %s", gw_mac)
     if not db.query(Gateway).filter_by(gw_mac=gw_mac).first():
         db.add(Gateway(gw_mac=gw_mac))
         db.commit()
