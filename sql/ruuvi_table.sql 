@@ -54,3 +54,37 @@ CREATE INDEX idx_measurement_gateway_time
 
 CREATE INDEX idx_raw_tag_time
     ON ruuvi.raw (tag_mac, received_at DESC);
+
+CREATE OR REPLACE VIEW ruuvi.v_sdata_with_sensor AS
+SELECT
+    d.id,
+    d.gw_mac,
+    d.tag_mac,
+    s.name AS sensor_name,
+    d.temperature,
+    d.humidity,
+    d.pressure,
+    d.battery,
+    d.rssi,
+    d.measured_at
+FROM ruuvi.data d
+LEFT JOIN ruuvi.sensor s
+  ON s.tag_mac = d.tag_mac
+WHERE s.name <> 'Terassi';
+
+CREATE OR REPLACE VIEW ruuvi.v_udata_with_sensor AS
+SELECT
+    d.id,
+    d.gw_mac,
+    d.tag_mac,
+    s.name AS sensor_name,
+    d.temperature,
+    d.humidity,
+    d.pressure,
+    d.battery,
+    d.rssi,
+    d.measured_at
+FROM ruuvi.data d
+LEFT JOIN ruuvi.sensor s
+  ON s.tag_mac = d.tag_mac
+WHERE s.name = 'Terassi';
