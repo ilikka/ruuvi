@@ -3,6 +3,7 @@ import logging
 import asyncio
 from sqlalchemy.orm import Session
 
+from config import API_KEY
 from database import get_db
 import crud
 
@@ -11,8 +12,17 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI(title="Ruuvi API")
 
+
+def verify_api_key(request: Request):
+    auth = request.headers.get("Authorization")
+    logger.debug("Received auth: %s", auth)
+    if not auth or auth != f"Bearer {API_KEY}":
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+
+
+
 @app.post("/ruuvi")
-async def receive_ruuvi(request: Request, db: Session = Depends(get_db)):
+async def receive_ruuvi(request: Request, db: Session = Depends(get_db), api_key=Depends(verify_api_key)):
   body = await request.json()
   logger.debug("Received payload: %s", body)
 
