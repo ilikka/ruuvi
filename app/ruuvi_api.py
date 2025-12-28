@@ -1,5 +1,10 @@
 # ruuvi_api.py
 
+"""
+FastAPI application for receiving Ruuvi Gateway push messages.
+"""
+
+
 # from ruuvi_decoders import decode_data as Decoder
 import logging
 # import psycopg2
