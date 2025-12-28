@@ -1,30 +1,27 @@
 # ruuvi_api.py
 from fastapi import FastAPI, Request
-# ßfrom ruuvi_decoders import decode_data as Decoder
-
+# from ruuvi_decoders import decode_data as Decoder
 import logging
-import psycopg2
-import os
-import logging
+# import psycopg2
+# import os
+# ruuvi_api.py
 
-# uvicorn ruuvi_api:app --host 0.0.0.0 --port 40064
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-# decoder = Decoder()
-
-
 
 @app.post("/ruuvi")
 async def receive_ruuvi(request: Request):
     body = await request.json()
-    logger.info("body : %s", body)    
+    logger.info("body : %s", body)
+
     if "data" not in body:
+        logger.warning("Invalid payload: %s", body)
         return {"error": "Invalid payload"}
-    
 
     return {"status": "ok"}
-
-
-
