@@ -1,16 +1,16 @@
 # ruuvi_api.py
-from fastapi import FastAPI, Request
+
 # from ruuvi_decoders import decode_data as Decoder
 import logging
 # import psycopg2
 # import os
-# ruuvi_api.py
+
+from fastapi import FastAPI, Request
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
 )
-
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
