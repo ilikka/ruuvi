@@ -70,7 +70,7 @@ SELECT
 FROM ruuvi.data d
 LEFT JOIN ruuvi.sensor s
   ON s.tag_mac = d.tag_mac
-WHERE s.name <> 'Terassi';
+WHERE s.name <> 'Terassi' and s.name <> 'Ulkolämpötila' and s.name <> 'Lattia';
 
 CREATE OR REPLACE VIEW ruuvi.v_udata_with_sensor AS
 SELECT
@@ -90,8 +90,7 @@ LEFT JOIN ruuvi.sensor s
 WHERE s.name = 'Ulkolämpötila';
 
 CREATE OR REPLACE VIEW ruuvi.v_sensor_battery AS
-SELECT
-    d.id,
+ SELECT d.id,
     d.gw_mac,
     d.tag_mac,
     s.name AS sensor_name,
@@ -99,4 +98,6 @@ SELECT
     d.rssi,
     d.measured_at
    FROM ruuvi.data d
-     LEFT JOIN ruuvi.sensor s ON s.tag_mac = d.tag_mac;
+     LEFT JOIN ruuvi.sensor s ON s.tag_mac = d.tag_mac
+	 where d.battery <= '2.4'
+	 and  s.name is not NULL;
