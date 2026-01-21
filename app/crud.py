@@ -52,7 +52,7 @@ def save_raw(db: Session, gw_mac, tag_mac, raw_data, rssi):
   db.commit()
   return raw
 
-def save_data(db: Session, gw_mac, tag_mac, temperature=None, humidity=None, pressure=None, battery=None, rssi=None):
+def save_data(db: Session, gw_mac, tag_mac, temperature=None, humidity=None, pressure=None, battery=None, rssi=None, timestamp=None):
   """
   Docstring for save formatted data
   :param db: db
@@ -64,6 +64,7 @@ def save_data(db: Session, gw_mac, tag_mac, temperature=None, humidity=None, pre
   :param pressure: pressure value
   :param battery: battery voltage
   :param rssi: signal strength
+  :param timestamp: measurement timestamp from sensor
 
   """
   data = Data(

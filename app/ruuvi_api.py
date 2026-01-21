@@ -45,16 +45,18 @@ async def receive_ruuvi(
     humidity = tag_data.get("humidity")
     pressure = tag_data.get("pressure")
     voltage = tag_data.get("voltage")
+    timestamp = tag_data.get("timestamp")
+    
 
     logger.debug(
-      "gw=%s tag=%s temp=%.2f hum=%.2f",
-      gw_mac, tag_mac, temperature, humidity
+      "gw=%s tag=%s temp=%.2f hum=%.2f time=%s",  
+      gw_mac, tag_mac, temperature, humidity, timestamp 
     )
 
     # Run synchronous DB calls in a thread to avoid async errors
     await asyncio.to_thread(crud.get_or_create_gateway, db, gw_mac)
     await asyncio.to_thread(crud.get_or_create_sensor, db, tag_mac)
-    await asyncio.to_thread(crud.save_data, db, gw_mac, tag_mac, temperature, humidity, pressure, voltage, rssi)
+    await asyncio.to_thread(crud.save_data, db, gw_mac, tag_mac, temperature, humidity, pressure, voltage, rssi, timestamp)
 
 
 
