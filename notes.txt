@@ -1,0 +1,24 @@
+
+INSERT INTO ruuvi.data (
+    measured_at,
+    id,
+    temperature,
+    tag_mac,
+    gw_mac
+)
+SELECT
+    pw.utc_time      AS measured_at,
+    pw.id            AS id,
+    pw.value         AS temperature,
+    '0A:0A:00:00:00:0A' AS tag_mac,
+    '0A:00:00:00:00:01'    AS gw_mac
+FROM public.view_aallokko_temperature pw
+WHERE pw.name = 'Pi';
+
+
+UPDATE ruuvi.data rd
+SET rssi = pw.level
+FROM public.wifi pw
+WHERE rd.id = pw.id
+  AND rd.gw_mac = 'xxx'
+  AND rd.tag_mac = 'yyy';

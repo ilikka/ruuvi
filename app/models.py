@@ -37,7 +37,7 @@ class Data(Base):
   __table_args__ = {"schema": "ruuvi"}
 
   id = Column(BigInteger, primary_key=True)
-  gw_mac = Column(String, ForeignKey("ruuvi.gateway.gw_mac"), nullable=False)
+  gw_mac = Column(String, ForeignKey("ruuvi.gateway.gw_mac"), primary_key=True, nullable=False)
   tag_mac = Column(String, ForeignKey("ruuvi.sensor.tag_mac"), nullable=False)
   temperature = Column(Float)
   humidity = Column(Float)

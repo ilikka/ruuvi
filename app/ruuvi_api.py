@@ -59,11 +59,10 @@ async def receive_ruuvi(
     await asyncio.to_thread(crud.get_or_create_gateway, db, gw_mac)
     await asyncio.to_thread(crud.get_or_create_sensor, db, tag_mac)
     await asyncio.to_thread(crud.save_data, db, gw_mac, tag_mac, temperature, humidity, pressure, voltage, rssi, timestamp)
-
-
-
-  
-
-  # await asyncio.to_thread(crud.save_raw, db, gw_mac, tag_mac, raw_data, rssi)
   
   return {"status": "ok"}
+
+@app.get("/ruuvi/max-id")
+async def get_max_id(gw_mac: str, db: Session = Depends(get_db)):
+  max_id = await asyncio.to_thread(crud.get_max_id_by_gw_mac, db, gw_mac)
+  return {"gw_mac": gw_mac, "max_id": max_id}

@@ -79,3 +79,27 @@ def save_data(db: Session, gw_mac, tag_mac, temperature=None, humidity=None, pre
   db.add(data)
   db.commit()
   return data
+
+
+def get_max_id_by_gw_mac(db, gw_mac: str) -> int:
+    """
+    Docstring for get_max_id_by_gw_mac
+    
+    :param db: Description
+    :param gw_mac: Description
+    :type gw_mac: str
+    :return: Description
+    :rtype: int
+    """
+    # Check if gateway exists
+    gateway_exists = db.query(Gateway).filter(Gateway.gw_mac == gw_mac).first()
+
+    if not gateway_exists:
+        return 0
+
+    #  Get max id from data table
+    max_id = db.query(func.max(Data.id))\
+        .filter(Data.gw_mac == gw_mac)\
+        .scalar()
+
+    return max_id or 0
