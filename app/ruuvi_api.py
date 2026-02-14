@@ -64,5 +64,7 @@ async def receive_ruuvi(
 
 @app.get("/ruuvi/max-id")
 async def get_max_id(gw_mac: str, db: Session = Depends(get_db)):
+  logger.debug("Received request for max id with gw_mac: %s", gw_mac)
   max_id = await asyncio.to_thread(crud.get_max_id_by_gw_mac, db, gw_mac)
+  logger.debug("Max id for gw_mac %s is %s", gw_mac, max_id)
   return {"gw_mac": gw_mac, "max_id": max_id}

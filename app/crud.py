@@ -1,7 +1,8 @@
 """
 save data from ruuvi gateway to database
 """
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session 
+from sqlalchemy  import func 
 from models import Gateway, Sensor, Data, Raw
 
 def get_or_create_gateway(db: Session, gw_mac: str):
