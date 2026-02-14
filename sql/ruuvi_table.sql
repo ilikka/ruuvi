@@ -14,7 +14,7 @@ CREATE TABLE ruuvi.sensor (
 );
 
 CREATE TABLE ruuvi.data (
-    id BIGSERIAL,
+    id BIGSERIAL PRIMARY KEY,
     gw_mac TEXT NOT NULL,
     tag_mac TEXT NOT NULL,
 
@@ -26,8 +26,6 @@ CREATE TABLE ruuvi.data (
 
     measured_at TIMESTAMPTZ DEFAULT now(),
 
-    CONSTRAINT data_pkey
-        PRIMARY KEY (id, gw_mac),
     CONSTRAINT fk_gateway
         FOREIGN KEY (gw_mac) REFERENCES ruuvi.gateway (gw_mac),
     CONSTRAINT fk_sensor
